@@ -118,6 +118,13 @@ function drawRandomNumber() {
           />
         </span>
       </label>
+      <button
+        v-if="soundEnabled && lastCalled"
+        class="cursor-pointer rounded-lg border-2 border-slate-800 bg-slate-900 px-3 py-2 text-sm font-semibold text-slate-500 transition-all hover:border-slate-700 hover:bg-slate-800/60 hover:text-slate-300"
+        @click="playNumber(lastCalled!)"
+      >
+        🔁 Repetir
+      </button>
       <select
         v-if="soundEnabled"
         class="cursor-pointer rounded-lg border-2 border-slate-800 bg-slate-900 px-3 py-2 text-sm font-semibold text-slate-400 transition-all hover:border-slate-700"

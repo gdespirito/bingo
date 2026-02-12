@@ -2,6 +2,21 @@
 
 This template should help get you started developing with Vue 3 in Vite.
 
+## Docker / CI
+
+El workflow **Build and push Docker image** (`.github/workflows/docker-push.yml`) construye la imagen para `linux/amd64` y la sube a `registry.freshwork.dev/bingo:latest` en cada push a `main` (o al lanzarlo manualmente).
+
+### Secrets necesarios en GitHub
+
+En el repo: **Settings → Secrets and variables → Actions** crea estos secrets:
+
+| Secret               | Descripción                          | Ejemplo (no usar tal cual) |
+|----------------------|--------------------------------------|----------------------------|
+| `REGISTRY_USERNAME`  | Usuario para `registry.freshwork.dev` | usuario o token ID          |
+| `REGISTRY_PASSWORD`  | Contraseña o token del registry       | token o contraseña         |
+
+Sin estos secrets, el paso de login al registry fallará.
+
 ## Recommended IDE Setup
 
 [VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).

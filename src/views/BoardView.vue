@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useBingoState } from '@/composables/useBingoState'
 import { useSpeechRecognition } from '@/composables/useSpeechRecognition'
 import HistoryPanel from '@/components/HistoryPanel.vue'
@@ -24,6 +25,28 @@ function getNumbers(start: number, end: number): number[] {
 const { speechStatus, speechText, recognizedNum } = useSpeechRecognition((num) => {
   if (!calledNumbers.value.has(num)) toggleNumber(num)
 })
+
+// ── Random number generator ──
+const randomResult = ref<number | null>(null)
+const randomAnimating = ref(false)
+const randomKey = ref(0)
+
+function drawRandomNumber() {
+  const available: number[] = []
+  for (let i = 1; i <= 75; i++) {
+    if (!calledNumbers.value.has(i)) available.push(i)
+  }
+  if (available.length === 0) return
+  randomAnimating.value = true
+  randomResult.value = null
+  const chosen = available[Math.floor(Math.random() * available.length)]!
+  setTimeout(() => {
+    randomResult.value = chosen
+    randomKey.value++
+    toggleNumber(chosen)
+    setTimeout(() => { randomAnimating.value = false }, 600)
+  }, 300)
+}
 </script>
 
 <template>
@@ -53,6 +76,33 @@ const { speechStatus, speechText, recognizedNum } = useSpeechRecognition((num) =
       >
         Reiniciar
       </button>
+    </div>
+
+    <!-- Random draw -->
+    <div class="mb-4 flex flex-col items-center gap-3">
+      <button
+        class="cursor-pointer rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-3 text-base font-extrabold text-white shadow-lg transition-all hover:scale-105 hover:shadow-orange-600/30 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+        :disabled="totalCalled >= 75 || randomAnimating"
+        @click="drawRandomNumber"
+      >
+        <span v-if="randomAnimating" class="inline-flex items-center gap-2">
+          <span class="inline-block h-4 w-4 animate-[spin_0.5s_linear_infinite] rounded-full border-2 border-white/30 border-t-white"></span>
+          Sacando...
+        </span>
+        <span v-else>&#127922; Sacar número</span>
+      </button>
+      <div
+        v-if="randomResult !== null"
+        :key="randomKey"
+        class="flex items-center gap-2 animate-[slot-reveal_0.5s_cubic-bezier(0.34,1.56,0.64,1)]"
+      >
+        <span
+          class="rounded-xl px-5 py-2 text-3xl font-black text-white shadow-lg"
+          :style="{ background: getColorForNumber(randomResult), boxShadow: '0 0 24px ' + getColorForNumber(randomResult) + '40' }"
+        >
+          {{ getLetterForNumber(randomResult) }}-{{ randomResult }}
+        </span>
+      </div>
     </div>
 
     <!-- Mic bar -->

@@ -51,6 +51,12 @@ body {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+@keyframes slot-reveal {
+  0% { transform: translateY(-100%) scale(0.8); opacity: 0; filter: blur(4px); }
+  50% { transform: translateY(8%) scale(1.05); opacity: 1; filter: blur(0); }
+  70% { transform: translateY(-3%) scale(1.02); }
+  100% { transform: translateY(0) scale(1); }
+}
 
 /* Number input spinners */
 input[type="number"]::-webkit-outer-spin-button,

@@ -53,13 +53,12 @@ body {
 }
 @keyframes mark-pop {
   0% { transform: scale(1); }
-  40% { transform: scale(1.25); }
-  70% { transform: scale(0.95); }
+  40% { transform: scale(1.1); }
   100% { transform: scale(1); }
 }
 @keyframes unmark-shrink {
   0% { transform: scale(1); }
-  40% { transform: scale(0.8); opacity: 0.6; }
+  40% { transform: scale(0.92); opacity: 0.7; }
   100% { transform: scale(1); opacity: 1; }
 }
 @keyframes float-reveal {

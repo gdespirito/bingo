@@ -168,8 +168,8 @@ function drawRandomNumber() {
               calledNumbers.has(num)
                 ? 'border-transparent text-white font-bold shadow-md hover:opacity-85 hover:scale-105'
                 : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 hover:bg-slate-800/60 hover:scale-105',
-              justToggled === num && calledNumbers.has(num) && 'animate-[mark-pop_0.35s_cubic-bezier(0.34,1.56,0.64,1)]',
-              justToggled === num && !calledNumbers.has(num) && 'animate-[unmark-shrink_0.3s_ease]',
+              justToggled === num && calledNumbers.has(num) && 'animate-[mark-pop_0.25s_ease-out]',
+              justToggled === num && !calledNumbers.has(num) && 'animate-[unmark-shrink_0.2s_ease]',
             ]"
             :style="calledNumbers.has(num) ? { background: col.color } : {}"
             @click="onToggle(num)"

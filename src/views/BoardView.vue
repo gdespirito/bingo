@@ -55,7 +55,8 @@ function drawRandomNumber() {
     randomResult.value = chosen
     randomKey.value++
     toggleNumber(chosen)
-    setTimeout(() => { randomAnimating.value = false }, 600)
+    randomAnimating.value = false
+    setTimeout(() => { randomResult.value = null }, 1800)
   }, 300)
 }
 </script>
@@ -90,7 +91,7 @@ function drawRandomNumber() {
     </div>
 
     <!-- Random draw -->
-    <div class="mb-4 flex flex-col items-center gap-3">
+    <div class="mb-4 flex justify-center">
       <button
         class="cursor-pointer rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-3 text-base font-extrabold text-white shadow-lg transition-all hover:scale-105 hover:shadow-orange-600/30 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="totalCalled >= 75 || randomAnimating"
@@ -102,19 +103,23 @@ function drawRandomNumber() {
         </span>
         <span v-else>&#127922; Sacar número</span>
       </button>
+    </div>
+
+    <!-- Floating random result overlay -->
+    <Teleport to="body">
       <div
         v-if="randomResult !== null"
         :key="randomKey"
-        class="flex items-center gap-2 animate-[slot-reveal_0.5s_cubic-bezier(0.34,1.56,0.64,1)]"
+        class="pointer-events-none fixed inset-0 z-50 flex items-center justify-center animate-[float-reveal_1.8s_cubic-bezier(0.34,1.56,0.64,1)_forwards]"
       >
         <span
-          class="rounded-xl px-5 py-2 text-3xl font-black text-white shadow-lg"
-          :style="{ background: getColorForNumber(randomResult), boxShadow: '0 0 24px ' + getColorForNumber(randomResult) + '40' }"
+          class="rounded-2xl px-8 py-4 text-5xl font-black text-white sm:text-6xl"
+          :style="{ background: getColorForNumber(randomResult), boxShadow: '0 0 60px ' + getColorForNumber(randomResult) + '80, 0 0 120px ' + getColorForNumber(randomResult) + '30' }"
         >
           {{ getLetterForNumber(randomResult) }}-{{ randomResult }}
         </span>
       </div>
-    </div>
+    </Teleport>
 
     <!-- Mic bar -->
     <div

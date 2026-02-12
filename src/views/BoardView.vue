@@ -69,20 +69,12 @@ const wordToNumber: Record<string, number> = {
 
 function parseSpokenNumber(text: string): number | null {
   const clean = text.toLowerCase().trim()
-
-  // Try direct number in string: "42", "B 15", "B-15", "be 15"
   const digitMatch = clean.match(/(\d+)/)
   if (digitMatch) {
     const n = parseInt(digitMatch[1])
     if (n >= 1 && n <= 75) return n
   }
-
-  // Try exact word match
-  if (wordToNumber[clean] !== undefined) {
-    return wordToNumber[clean]
-  }
-
-  // Try compound: "treinta y cinco" → 35, "sesenta y ocho" → 68
+  if (wordToNumber[clean] !== undefined) return wordToNumber[clean]
   const compoundMatch = clean.match(/^(\w+)\s+y\s+(\w+)$/)
   if (compoundMatch) {
     const tens = wordToNumber[compoundMatch[1]]
@@ -92,12 +84,9 @@ function parseSpokenNumber(text: string): number | null {
       if (n >= 1 && n <= 75) return n
     }
   }
-
-  // Try last word if multi-word (e.g. "la be quince" → quince → 15)
   const words = clean.split(/\s+/)
   for (let i = words.length - 1; i >= 0; i--) {
     if (wordToNumber[words[i]] !== undefined) {
-      // Check for compound with previous word
       if (i >= 2 && words[i - 1] === 'y' && wordToNumber[words[i - 2]] !== undefined) {
         const tens = wordToNumber[words[i - 2]]
         const ones = wordToNumber[words[i]]
@@ -110,86 +99,56 @@ function parseSpokenNumber(text: string): number | null {
       if (n >= 1 && n <= 75) return n
     }
   }
-
   return null
 }
 
 function startListening() {
   if (!SpeechRecognition || listening.value) return
-
   recognition = new SpeechRecognition()
   recognition.lang = 'es-CL'
   recognition.interimResults = false
   recognition.maxAlternatives = 3
   recognition.continuous = false
-
   recognition.onstart = () => {
     listening.value = true
     speechStatus.value = 'listening'
     speechText.value = ''
     recognizedNum.value = null
   }
-
   recognition.onresult = (event: any) => {
     let bestNum: number | null = null
-    // Check all alternatives
     for (let i = 0; i < event.results[0].length; i++) {
       const transcript = event.results[0][i].transcript
       speechText.value = transcript
       const num = parseSpokenNumber(transcript)
-      if (num !== null) {
-        bestNum = num
-        break
-      }
+      if (num !== null) { bestNum = num; break }
     }
-
     if (bestNum !== null) {
       recognizedNum.value = bestNum
       speechStatus.value = 'success'
-      // Only mark if not already called
-      if (!calledNumbers.value.has(bestNum)) {
-        toggleNumber(bestNum)
-      }
+      if (!calledNumbers.value.has(bestNum)) toggleNumber(bestNum)
     } else {
       speechStatus.value = 'error'
     }
-
-    // Auto-clear status after a moment
-    setTimeout(() => {
-      if (!listening.value) {
-        speechStatus.value = 'idle'
-      }
-    }, 2000)
+    setTimeout(() => { if (!listening.value) speechStatus.value = 'idle' }, 2000)
   }
-
   recognition.onerror = () => {
     speechStatus.value = 'error'
     speechText.value = 'No se pudo reconocer'
     listening.value = false
     setTimeout(() => { speechStatus.value = 'idle' }, 2000)
   }
-
-  recognition.onend = () => {
-    listening.value = false
-  }
-
+  recognition.onend = () => { listening.value = false }
   recognition.start()
 }
 
-function stopListening() {
-  if (recognition) {
-    recognition.stop()
-  }
-}
+function stopListening() { if (recognition) recognition.stop() }
 
 function onKeyDown(e: KeyboardEvent) {
   if (e.code === 'Space' && !e.repeat && !isInputFocused()) {
     e.preventDefault()
-    if (listening.value) {
-      stopListening()
-    } else {
-      startListening()
-    }
+    if (listening.value) stopListening()
+    else startListening()
   }
 }
 
@@ -198,10 +157,7 @@ function isInputFocused(): boolean {
   return tag === 'input' || tag === 'textarea' || tag === 'select'
 }
 
-onMounted(() => {
-  window.addEventListener('keydown', onKeyDown)
-})
-
+onMounted(() => { window.addEventListener('keydown', onKeyDown) })
 onUnmounted(() => {
   window.removeEventListener('keydown', onKeyDown)
   if (recognition) recognition.abort()
@@ -209,57 +165,83 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="board-page">
-    <div class="stats">
-      <div class="last-called" v-if="lastCalled">
-        <span class="label">Ultimo</span>
-        <span class="big-number" :style="{ background: getColorForNumber(lastCalled) }">
+  <div class="mx-auto max-w-[700px]">
+    <!-- Stats -->
+    <div class="mb-5 flex flex-wrap items-center justify-center gap-4">
+      <div class="flex flex-col items-center gap-1">
+        <span class="text-[0.7rem] font-semibold uppercase tracking-wider text-slate-500">Ultimo</span>
+        <span
+          v-if="lastCalled"
+          class="min-w-[80px] animate-[pop-in_0.3s_ease] rounded-lg px-4 py-1.5 text-center text-xl font-black text-white"
+          :style="{ background: getColorForNumber(lastCalled) }"
+        >
           {{ getLetterForNumber(lastCalled) }}-{{ lastCalled }}
         </span>
+        <span v-else class="min-w-[80px] rounded-lg bg-slate-900 px-4 py-1.5 text-center text-xl font-black text-slate-700">
+          --
+        </span>
       </div>
-      <div class="last-called" v-else>
-        <span class="label">Ultimo</span>
-        <span class="big-number empty">--</span>
+      <div class="flex flex-col items-center gap-1">
+        <span class="text-[0.7rem] font-semibold uppercase tracking-wider text-slate-500">Llamados</span>
+        <span class="text-lg font-bold text-slate-300">{{ totalCalled }} / 75</span>
       </div>
-      <div class="counter">
-        <span class="label">Llamados</span>
-        <span class="count">{{ totalCalled }} / 75</span>
-      </div>
-      <button class="reset-btn" @click="resetBoard">Reiniciar</button>
+      <button
+        class="cursor-pointer rounded-lg border-2 border-slate-800 bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-500 transition-all hover:border-red-600 hover:bg-red-600 hover:text-white"
+        @click="resetBoard"
+      >
+        Reiniciar
+      </button>
     </div>
 
-    <!-- Mic indicator -->
-    <div class="mic-bar" :class="speechStatus">
-      <div v-if="speechStatus === 'listening'" class="mic-content">
-        <span class="mic-icon pulse">&#127908;</span>
+    <!-- Mic bar -->
+    <div
+      class="mb-4 flex min-h-[42px] items-center justify-center rounded-lg border-2 px-4 py-2 transition-all"
+      :class="{
+        'border-green-500 bg-[#1e3a2f] shadow-[0_0_20px_rgba(34,197,94,0.15)]': speechStatus === 'listening',
+        'border-blue-600 bg-slate-900': speechStatus === 'success',
+        'border-red-600 bg-[#2d1f1f]': speechStatus === 'error',
+        'border-slate-800 bg-slate-900': speechStatus === 'idle',
+      }"
+    >
+      <div v-if="speechStatus === 'listening'" class="flex items-center gap-2 text-sm font-semibold text-slate-300">
+        <span class="animate-[pulse-mic_1s_ease_infinite] text-lg">&#127908;</span>
         <span>Escuchando...</span>
       </div>
-      <div v-else-if="speechStatus === 'success'" class="mic-content">
-        <span class="mic-icon">&#9989;</span>
+      <div v-else-if="speechStatus === 'success'" class="flex items-center gap-2 text-sm font-semibold text-slate-300">
+        <span class="text-lg">&#9989;</span>
         <span>"{{ speechText }}" &rarr; <strong>{{ recognizedNum }}</strong></span>
       </div>
-      <div v-else-if="speechStatus === 'error'" class="mic-content">
-        <span class="mic-icon">&#10060;</span>
+      <div v-else-if="speechStatus === 'error'" class="flex items-center gap-2 text-sm font-semibold text-slate-300">
+        <span class="text-lg">&#10060;</span>
         <span>{{ speechText || 'No reconocido' }} &mdash; intenta de nuevo</span>
       </div>
-      <div v-else class="mic-content mic-hint">
-        <span class="mic-icon">&#127908;</span>
-        <span>Presiona <kbd>espacio</kbd> para dictar un numero</span>
+      <div v-else class="flex items-center gap-2 text-sm font-semibold text-slate-600">
+        <span class="text-lg">&#127908;</span>
+        <span>Presiona <kbd class="rounded border border-slate-700 bg-slate-800 px-2 py-0.5 text-xs font-bold text-slate-500">espacio</kbd> para dictar un numero</span>
       </div>
     </div>
 
-    <div class="main-layout">
-      <div class="board">
-        <div v-for="col in columns" :key="col.letter" class="column">
-          <div class="column-header" :style="{ background: col.color }">
+    <!-- Board + History -->
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
+      <!-- Board grid -->
+      <div class="grid w-full grid-cols-5 gap-1 sm:min-w-0 sm:flex-1 sm:gap-1.5">
+        <div v-for="col in columns" :key="col.letter" class="flex flex-col gap-0.5 sm:gap-1">
+          <div
+            class="rounded-md sm:rounded-lg py-1.5 sm:py-2 text-center text-xl sm:text-2xl font-black text-white tracking-wide"
+            :style="{ background: col.color }"
+          >
             {{ col.letter }}
           </div>
           <button
             v-for="num in getNumbers(col.start, col.end)"
             :key="num"
-            class="cell"
-            :class="{ called: calledNumbers.has(num) }"
-            :style="calledNumbers.has(num) ? { background: col.color, borderColor: col.color } : {}"
+            class="cursor-pointer select-none rounded-md sm:rounded-lg border-2 py-1.5 sm:py-2 text-center text-sm sm:text-base font-semibold transition-all [-webkit-tap-highlight-color:transparent]"
+            :class="
+              calledNumbers.has(num)
+                ? 'border-transparent text-white font-bold shadow-md hover:opacity-85 hover:scale-105'
+                : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 hover:bg-slate-800/60 hover:scale-105'
+            "
+            :style="calledNumbers.has(num) ? { background: col.color } : {}"
             @click="toggleNumber(num)"
           >
             {{ num }}
@@ -267,308 +249,29 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <div class="history-panel">
-        <h3>Historial <span class="history-count">({{ history.length }})</span></h3>
-        <div class="history-list" v-if="history.length > 0">
+      <!-- History panel -->
+      <div class="w-full overflow-y-auto rounded-xl border border-slate-800 bg-slate-900 p-3 sm:w-[130px] sm:shrink-0 sm:max-h-[70vh]">
+        <h3 class="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">
+          Historial <span class="text-slate-600">({{ history.length }})</span>
+        </h3>
+        <div v-if="history.length > 0" class="flex flex-row flex-wrap gap-1 sm:flex-col">
           <div
             v-for="(num, idx) in [...history].reverse()"
             :key="idx"
-            class="history-row"
-            :class="{ latest: idx === 0 }"
+            class="flex items-center gap-1.5"
+            :class="idx === 0 && 'animate-[pop-in_0.3s_ease]'"
           >
-            <span class="history-index">{{ history.length - idx }}</span>
-            <span class="history-chip" :style="{ background: getColorForNumber(num) }">
+            <span class="hidden min-w-[18px] text-right text-[0.65rem] font-semibold text-slate-700 sm:inline">{{ history.length - idx }}</span>
+            <span
+              class="flex-1 rounded-md px-2 py-0.5 text-center text-xs font-bold text-white"
+              :style="{ background: getColorForNumber(num) }"
+            >
               {{ getLetterForNumber(num) }}-{{ num }}
             </span>
           </div>
         </div>
-        <div class="history-empty" v-else>Sin numeros aun</div>
+        <div v-else class="py-3 text-center text-xs text-slate-700">Sin numeros aun</div>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.board-page {
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-.stats {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-
-.last-called {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #94a3b8;
-  font-weight: 600;
-}
-
-.big-number {
-  font-size: 1.4rem;
-  font-weight: 900;
-  padding: 6px 16px;
-  border-radius: 10px;
-  color: white;
-  min-width: 80px;
-  text-align: center;
-  animation: popIn 0.3s ease;
-}
-.big-number.empty {
-  background: #1e293b;
-  color: #475569;
-}
-@keyframes popIn {
-  0% { transform: scale(0.8); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-.counter {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-.count {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #e2e8f0;
-}
-
-.reset-btn {
-  background: #1e293b;
-  border: 2px solid #334155;
-  color: #94a3b8;
-  padding: 8px 18px;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: inherit;
-}
-.reset-btn:hover {
-  background: #dc2626;
-  border-color: #dc2626;
-  color: white;
-}
-
-.main-layout {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-}
-
-.board {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
-  flex: 1;
-  min-width: 0;
-}
-
-.column {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.column-header {
-  font-size: 1.5rem;
-  font-weight: 900;
-  text-align: center;
-  padding: 8px 0;
-  border-radius: 10px;
-  color: white;
-  letter-spacing: 0.05em;
-}
-
-.cell {
-  background: #1e293b;
-  border: 2px solid #334155;
-  color: #cbd5e1;
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 8px 0;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  font-family: inherit;
-  text-align: center;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
-.cell:hover {
-  border-color: #64748b;
-  background: #283548;
-  transform: scale(1.05);
-}
-.cell.called {
-  color: white;
-  font-weight: 700;
-  border-color: transparent;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-.cell.called:hover {
-  opacity: 0.85;
-  transform: scale(1.05);
-}
-
-/* History panel */
-.history-panel {
-  width: 130px;
-  flex-shrink: 0;
-  background: #1e293b;
-  border-radius: 14px;
-  padding: 12px;
-  border: 1px solid #334155;
-  max-height: 70vh;
-  overflow-y: auto;
-}
-.history-panel h3 {
-  font-size: 0.8rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.history-count {
-  color: #64748b;
-  font-weight: 600;
-}
-.history-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.history-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.history-row.latest {
-  animation: popIn 0.3s ease;
-}
-.history-index {
-  font-size: 0.65rem;
-  color: #475569;
-  font-weight: 600;
-  min-width: 18px;
-  text-align: right;
-}
-.history-chip {
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
-  color: white;
-  flex: 1;
-  text-align: center;
-}
-.history-empty {
-  font-size: 0.75rem;
-  color: #475569;
-  text-align: center;
-  padding: 12px 0;
-}
-
-/* Mic bar */
-.mic-bar {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
-  padding: 8px 16px;
-  border-radius: 10px;
-  background: #1e293b;
-  border: 2px solid #334155;
-  transition: all 0.2s;
-  min-height: 42px;
-}
-.mic-bar.listening {
-  background: #1e3a2f;
-  border-color: #22c55e;
-  box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
-}
-.mic-bar.success {
-  background: #1e293b;
-  border-color: #2563eb;
-}
-.mic-bar.error {
-  background: #2d1f1f;
-  border-color: #dc2626;
-}
-.mic-content {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #e2e8f0;
-}
-.mic-content.mic-hint {
-  color: #64748b;
-}
-.mic-content kbd {
-  background: #334155;
-  color: #94a3b8;
-  padding: 2px 8px;
-  border-radius: 5px;
-  font-size: 0.75rem;
-  font-family: inherit;
-  font-weight: 700;
-  border: 1px solid #475569;
-}
-.mic-icon {
-  font-size: 1.1rem;
-}
-.mic-icon.pulse {
-  animation: pulseMic 1s ease infinite;
-}
-@keyframes pulseMic {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.15); }
-}
-
-@media (max-width: 520px) {
-  .main-layout {
-    flex-direction: column;
-  }
-  .history-panel {
-    width: 100%;
-    max-height: none;
-  }
-  .history-list {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-  .history-row {
-    gap: 3px;
-  }
-  .history-index {
-    display: none;
-  }
-  .column-header {
-    font-size: 1.2rem;
-    padding: 6px 0;
-  }
-  .cell {
-    font-size: 0.85rem;
-    padding: 6px 0;
-  }
-}
-</style>

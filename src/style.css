@@ -51,6 +51,17 @@ body {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+@keyframes mark-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+@keyframes unmark-shrink {
+  0% { transform: scale(1); }
+  40% { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 1; }
+}
 @keyframes slot-reveal {
   0% { transform: translateY(-100%) scale(0.8); opacity: 0; filter: blur(4px); }
   50% { transform: translateY(8%) scale(1.05); opacity: 1; filter: blur(0); }

@@ -26,6 +26,17 @@ const { speechStatus, speechText, recognizedNum } = useSpeechRecognition((num) =
   if (!calledNumbers.value.has(num)) toggleNumber(num)
 })
 
+// ── Board cell animation ──
+const justToggled = ref<number | null>(null)
+let toggleTimer: ReturnType<typeof setTimeout> | null = null
+
+function onToggle(num: number) {
+  toggleNumber(num)
+  justToggled.value = num
+  if (toggleTimer) clearTimeout(toggleTimer)
+  toggleTimer = setTimeout(() => { justToggled.value = null }, 400)
+}
+
 // ── Random number generator ──
 const randomResult = ref<number | null>(null)
 const randomAnimating = ref(false)
@@ -148,13 +159,15 @@ function drawRandomNumber() {
             v-for="num in getNumbers(col.start, col.end)"
             :key="num"
             class="cursor-pointer select-none rounded-md sm:rounded-lg border-2 py-1.5 sm:py-2 text-center text-sm sm:text-base font-semibold transition-all [-webkit-tap-highlight-color:transparent]"
-            :class="
+            :class="[
               calledNumbers.has(num)
                 ? 'border-transparent text-white font-bold shadow-md hover:opacity-85 hover:scale-105'
-                : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 hover:bg-slate-800/60 hover:scale-105'
-            "
+                : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700 hover:bg-slate-800/60 hover:scale-105',
+              justToggled === num && calledNumbers.has(num) && 'animate-[mark-pop_0.35s_cubic-bezier(0.34,1.56,0.64,1)]',
+              justToggled === num && !calledNumbers.has(num) && 'animate-[unmark-shrink_0.3s_ease]',
+            ]"
             :style="calledNumbers.has(num) ? { background: col.color } : {}"
-            @click="toggleNumber(num)"
+            @click="onToggle(num)"
           >
             {{ num }}
           </button>

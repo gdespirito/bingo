@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useBingoState } from '@/composables/useBingoState'
+import { useBingoAudio } from '@/composables/useBingoAudio'
 import { useSpeechRecognition } from '@/composables/useSpeechRecognition'
 import HistoryPanel from '@/components/HistoryPanel.vue'
 
@@ -16,6 +17,17 @@ const {
   getColorForNumber,
 } = useBingoState()
 
+const {
+  soundEnabled,
+  selectedSpeakerId,
+  speakers,
+  isPreloading,
+  preloadProgress,
+  toggleSound,
+  setSpeaker,
+  playNumber,
+} = useBingoAudio()
+
 function getNumbers(start: number, end: number): number[] {
   const nums: number[] = []
   for (let i = start; i <= end; i++) nums.push(i)
@@ -23,7 +35,10 @@ function getNumbers(start: number, end: number): number[] {
 }
 
 const { speechStatus, speechText, recognizedNum } = useSpeechRecognition((num) => {
-  if (!calledNumbers.value.has(num)) toggleNumber(num)
+  if (!calledNumbers.value.has(num)) {
+    toggleNumber(num)
+    playNumber(num)
+  }
 })
 
 // ── Board cell animation ──
@@ -31,7 +46,9 @@ const justToggled = ref<number | null>(null)
 let toggleTimer: ReturnType<typeof setTimeout> | null = null
 
 function onToggle(num: number) {
+  const wasUncalled = !calledNumbers.value.has(num)
   toggleNumber(num)
+  if (wasUncalled) playNumber(num)
   justToggled.value = num
   if (toggleTimer) clearTimeout(toggleTimer)
   toggleTimer = setTimeout(() => { justToggled.value = null }, 400)
@@ -55,6 +72,7 @@ function drawRandomNumber() {
     randomResult.value = chosen
     randomKey.value++
     toggleNumber(chosen)
+    playNumber(chosen)
     randomAnimating.value = false
     setTimeout(() => { randomResult.value = null }, 1800)
   }, 300)
@@ -88,6 +106,24 @@ function drawRandomNumber() {
       >
         Reiniciar
       </button>
+      <button
+        class="cursor-pointer rounded-lg border-2 px-4 py-2 text-sm font-semibold transition-all"
+        :class="soundEnabled
+          ? 'border-emerald-600 bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30'
+          : 'border-slate-800 bg-slate-900 text-slate-500 hover:border-slate-700 hover:bg-slate-800/60'"
+        @click="toggleSound"
+      >
+        {{ soundEnabled ? '🔊' : '🔇' }} Sonido
+      </button>
+      <select
+        v-if="soundEnabled"
+        class="cursor-pointer rounded-lg border-2 border-slate-800 bg-slate-900 px-3 py-2 text-sm font-semibold text-slate-400 transition-all hover:border-slate-700"
+        :value="selectedSpeakerId"
+        @change="setSpeaker(($event.target as HTMLSelectElement).value)"
+      >
+        <option v-for="s in speakers" :key="s.id" :value="s.id">{{ s.name }}</option>
+      </select>
+      <span v-if="isPreloading" class="text-xs text-slate-500">Cargando {{ preloadProgress }}/75</span>
     </div>
 
     <!-- Random draw -->

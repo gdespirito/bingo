@@ -4,18 +4,19 @@ This template should help get you started developing with Vue 3 in Vite.
 
 ## Docker / CI
 
-El workflow **Build and push Docker image** (`.github/workflows/docker-push.yml`) construye la imagen para `linux/amd64` y la sube a `registry.freshwork.dev/bingo:latest` en cada push a `main` (o al lanzarlo manualmente).
+El workflow **Build and push Docker image** (`.github/workflows/docker-push.yml`) construye la imagen para `linux/amd64`, la sube a `registry.freshwork.dev/bingo:latest` y hace `kubectl rollout restart deployment bingo -n bingo` en cada push a `main` (o al lanzarlo manualmente).
 
 ### Secrets necesarios en GitHub
 
 En el repo: **Settings → Secrets and variables → Actions** crea estos secrets:
 
-| Secret               | Descripción                          | Ejemplo (no usar tal cual) |
-|----------------------|--------------------------------------|----------------------------|
-| `REGISTRY_USERNAME`  | Usuario para `registry.freshwork.dev` | usuario o token ID          |
-| `REGISTRY_PASSWORD`  | Contraseña o token del registry       | token o contraseña         |
+| Secret               | Descripción                                                                 | Valor |
+|----------------------|-----------------------------------------------------------------------------|--------|
+| `REGISTRY_USERNAME`  | Usuario para `registry.freshwork.dev`                                       | usuario o token ID |
+| `REGISTRY_PASSWORD`  | Contraseña o token del registry                                            | token o contraseña |
+| `KUBE_CONFIG`        | Kubeconfig del cluster donde corre el deployment `bingo` (namespace `bingo`), **en base64** | `cat ~/.kube/config \| base64 -w0` (Linux) o `cat ~/.kube/config \| base64` (macOS) |
 
-Sin estos secrets, el paso de login al registry fallará.
+Sin `REGISTRY_*`, falla el login al registry. Sin `KUBE_CONFIG`, falla el job de rollout (la imagen sí se sube).
 
 ## Recommended IDE Setup
 

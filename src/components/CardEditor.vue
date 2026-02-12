@@ -42,7 +42,7 @@ function colRange(ci: number): string { return `${columns[ci]!.start}-${columns[
 function colLetter(ci: number): string { return columns[ci]!.letter }
 
 function save() {
-  emit('save', cardName.value || 'Mi Carton', grid.value)
+  emit('save', cardName.value || 'Mi Cartón', grid.value)
 }
 </script>
 
@@ -50,7 +50,7 @@ function save() {
   <div class="animate-[fade-in_0.2s_ease]">
     <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5">
       <h3 class="mb-4 text-lg font-extrabold text-slate-300">
-        {{ editingCard ? 'Editar Carton' : 'Nuevo Carton' }}
+        {{ editingCard ? 'Editar Cartón' : 'Nuevo Cartón' }}
       </h3>
 
       <!-- Name field -->
@@ -59,7 +59,7 @@ function save() {
         <input
           v-model="cardName"
           type="text"
-          placeholder="Ej: Carton #442"
+          placeholder="Ej: Cartón #442"
           class="w-full rounded-lg border-2 border-slate-800 bg-slate-950 px-3.5 py-2.5 font-semibold text-slate-100 outline-none transition-colors focus:border-blue-600"
         />
       </div>
@@ -76,7 +76,7 @@ function save() {
             <span class="inline-block h-4 w-4 animate-[spin_0.6s_linear_infinite] rounded-full border-2 border-white/30 border-t-white"></span>
             Analizando foto...
           </template>
-          <template v-else>&#128247; Cargar foto del carton</template>
+          <template v-else>&#128247; Cargar foto del cartón</template>
         </button>
         <button
           class="w-11 cursor-pointer rounded-lg border-2 border-slate-800 bg-slate-950 text-lg text-slate-600 transition-all hover:border-slate-700 hover:text-slate-500"
@@ -88,7 +88,7 @@ function save() {
       </div>
       <p v-if="photoError" class="mb-2.5 rounded-lg border border-red-600/20 bg-red-600/10 px-3 py-2 text-sm text-red-400">{{ photoError }}</p>
 
-      <p class="mb-3 text-sm text-slate-600">O ingresa los numeros manualmente, fila por fila.</p>
+      <p class="mb-3 text-sm text-slate-600">O ingresa los números manualmente, fila por fila.</p>
 
       <!-- Edit grid -->
       <div class="mb-5">

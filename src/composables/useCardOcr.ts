@@ -47,7 +47,7 @@ async function callVisionAPI(apiKey: string, base64: string, mimeType: string): 
   const jsonStr = content.replace(/```json?\s*/g, '').replace(/```/g, '').trim()
   const parsed = JSON.parse(jsonStr)
   if (!Array.isArray(parsed) || parsed.length !== 5) throw new Error('La respuesta no tiene 5 filas')
-  for (const row of parsed) { if (!Array.isArray(row) || row.length !== 5) throw new Error('Cada fila debe tener 5 numeros') }
+  for (const row of parsed) { if (!Array.isArray(row) || row.length !== 5) throw new Error('Cada fila debe tener 5 números') }
   return parsed as number[][]
 }
 

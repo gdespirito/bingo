@@ -27,6 +27,6 @@ const { getLetterForNumber, getColorForNumber } = useBingoState()
         </span>
       </div>
     </div>
-    <div v-else class="py-3 text-center text-xs text-slate-700">Sin numeros aun</div>
+    <div v-else class="py-3 text-center text-xs text-slate-700">Sin números aún</div>
   </div>
 </template>

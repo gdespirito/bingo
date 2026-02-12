@@ -123,7 +123,13 @@ export function useSpeechRecognition(onNumber: (num: number) => void) {
     recognition.start()
   }
 
-  function stopListening() { if (recognition) recognition.stop() }
+  function stopListening() {
+    if (recognition) {
+      recognition.abort()
+      listening.value = false
+      speechStatus.value = 'idle'
+    }
+  }
 
   function isInputFocused(): boolean {
     const tag = document.activeElement?.tagName?.toLowerCase()

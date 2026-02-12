@@ -35,7 +35,7 @@ function saveCard(name: string, grid: (number | null)[][]) {
 }
 
 function confirmDelete(id: string) {
-  if (confirm('Eliminar este carton?')) removeCard(id)
+  if (confirm('Eliminar este cartón?')) removeCard(id)
 }
 
 function syncApiKey() {
@@ -52,7 +52,7 @@ function syncApiKey() {
         class="cursor-pointer rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-blue-700"
         @click="openNewCard"
       >
-        + Nuevo Carton
+        + Nuevo Cartón
       </button>
     </div>
 
@@ -70,7 +70,7 @@ function syncApiKey() {
     <!-- Empty state -->
     <div v-if="cards.length === 0 && !showEditor" class="py-12 text-center text-slate-700 leading-relaxed">
       <p>No tienes cartones guardados.</p>
-      <p>Agrega uno para seguir tus numeros.</p>
+      <p>Agrega uno para seguir tus números.</p>
     </div>
 
     <ApiKeyModal ref="apiKeyModal" v-model="showApiKeyInput" @update:model-value="syncApiKey" />

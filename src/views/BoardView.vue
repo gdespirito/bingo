@@ -31,7 +31,7 @@ const { speechStatus, speechText, recognizedNum } = useSpeechRecognition((num) =
     <!-- Stats -->
     <div class="mb-5 flex flex-wrap items-center justify-center gap-4">
       <div class="flex flex-col items-center gap-1">
-        <span class="text-[0.7rem] font-semibold uppercase tracking-wider text-slate-500">Ultimo</span>
+        <span class="text-[0.7rem] font-semibold uppercase tracking-wider text-slate-500">Último</span>
         <span
           v-if="lastCalled"
           class="min-w-[80px] animate-[pop-in_0.3s_ease] rounded-lg px-4 py-1.5 text-center text-xl font-black text-white"
@@ -79,7 +79,7 @@ const { speechStatus, speechText, recognizedNum } = useSpeechRecognition((num) =
       </div>
       <div v-else class="flex items-center gap-2 text-sm font-semibold text-slate-600">
         <span class="text-lg">&#127908;</span>
-        <span>Presiona <kbd class="rounded border border-slate-700 bg-slate-800 px-2 py-0.5 text-xs font-bold text-slate-500">espacio</kbd> para dictar un numero</span>
+        <span>Presiona <kbd class="rounded border border-slate-700 bg-slate-800 px-2 py-0.5 text-xs font-bold text-slate-500">espacio</kbd> para dictar un número</span>
       </div>
     </div>
 

@@ -18,13 +18,13 @@ const { getLetterForNumber, getColorForNumber } = useBingoState()
         class="flex items-center gap-1.5"
         :class="idx === 0 && 'animate-[pop-in_0.3s_ease]'"
       >
-        <span class="hidden min-w-[18px] text-right text-[0.65rem] font-semibold text-slate-700 sm:inline">{{ history.length - idx }}</span>
         <span
           class="flex-1 rounded-md px-2 py-0.5 text-center text-xs font-bold text-white"
           :style="{ background: getColorForNumber(num) }"
         >
           {{ getLetterForNumber(num) }}-{{ num }}
         </span>
+        <span class="hidden min-w-[18px] text-right text-[0.65rem] font-semibold text-slate-700 sm:inline">{{ history.length - idx }}</span>
       </div>
     </div>
     <div v-else class="py-3 text-center text-xs text-slate-700">Sin números aún</div>

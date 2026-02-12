@@ -106,15 +106,18 @@ function drawRandomNumber() {
       >
         Reiniciar
       </button>
-      <button
-        class="cursor-pointer rounded-lg border-2 px-4 py-2 text-sm font-semibold transition-all"
-        :class="soundEnabled
-          ? 'border-emerald-600 bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30'
-          : 'border-slate-800 bg-slate-900 text-slate-500 hover:border-slate-700 hover:bg-slate-800/60'"
-        @click="toggleSound"
-      >
-        {{ soundEnabled ? '🔊' : '🔇' }} Sonido
-      </button>
+      <label class="flex cursor-pointer items-center gap-2" @click.prevent="toggleSound">
+        <span class="text-sm font-semibold" :class="soundEnabled ? 'text-emerald-400' : 'text-slate-500'">🔊</span>
+        <span
+          class="relative inline-block h-6 w-10 rounded-full transition-colors"
+          :class="soundEnabled ? 'bg-emerald-600' : 'bg-slate-700'"
+        >
+          <span
+            class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform"
+            :class="soundEnabled ? 'translate-x-4' : 'translate-x-0'"
+          />
+        </span>
+      </label>
       <select
         v-if="soundEnabled"
         class="cursor-pointer rounded-lg border-2 border-slate-800 bg-slate-900 px-3 py-2 text-sm font-semibold text-slate-400 transition-all hover:border-slate-700"

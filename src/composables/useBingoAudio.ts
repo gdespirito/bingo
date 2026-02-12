@@ -10,7 +10,7 @@ const SOUND_KEY = 'bingo-sound-enabled'
 const SPEAKER_KEY = 'bingo-speaker'
 
 const speakers: Speaker[] = [
-  { id: 'gonza', name: 'GONZA', baseUrl: 'https://storage.freshwork.dev/bingo/gonza' },
+  { id: 'gonza', name: 'Gonza', baseUrl: 'https://storage.freshwork.dev/bingo/gonza' },
 ]
 
 const soundEnabled = ref<boolean>(localStorage.getItem(SOUND_KEY) === 'true')

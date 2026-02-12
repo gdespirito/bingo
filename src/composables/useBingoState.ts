@@ -1,26 +1,11 @@
 import { ref, computed } from 'vue'
+import type { BingoCard, GameMode, GameModeInfo } from './useBingoState.types'
+
+export type { BingoCard, GameMode, GameModeInfo }
 
 const STORAGE_KEY = 'bingo-state'
 const CARDS_KEY = 'bingo-cards'
 const GAMEMODE_KEY = 'bingo-gamemode'
-
-export interface BingoCard {
-  id: string
-  name: string
-  grid: (number | null)[][] // 5 rows x 5 cols, center is null (FREE)
-}
-
-// ── Game modes / patterns ──
-
-export type GameMode = 'completo' | 'L' | 'U' | 'O' | 'X'
-
-export interface GameModeInfo {
-  id: GameMode
-  label: string
-  icon: string
-  // cells that must be marked to win: [row, col][]
-  cells: [number, number][]
-}
 
 const allCells: [number, number][] = []
 for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) allCells.push([r, c])

@@ -87,7 +87,7 @@ function setGameMode(mode: GameMode) {
 }
 
 function getActivePattern(): GameModeInfo {
-  return gameModes.find((m) => m.id === activeGameMode.value) ?? gameModes[0]
+  return gameModes.find((m) => m.id === activeGameMode.value) ?? gameModes[0]!
 }
 
 // Build a Set of "row,col" strings for quick lookup
@@ -103,9 +103,9 @@ function isCellInPattern(row: number, col: number): boolean {
 function checkCardWin(card: BingoCard): boolean {
   const pattern = getActivePattern()
   for (const [r, c] of pattern.cells) {
-    const cell = card.grid[r][c]
+    const cell = card.grid[r]![c]
     // null = FREE, always counts as called
-    if (cell !== null && !calledNumbers.value.has(cell)) {
+    if (cell !== null && cell !== undefined && !calledNumbers.value.has(cell)) {
       return false
     }
   }
@@ -151,7 +151,7 @@ function toggleNumber(num: number) {
     history.value = history.value.filter((n) => n !== num)
     if (lastCalled.value === num) {
       lastCalled.value =
-        history.value.length > 0 ? history.value[history.value.length - 1] : null
+        history.value.length > 0 ? history.value[history.value.length - 1]! : null
     }
   } else {
     calledNumbers.value.add(num)

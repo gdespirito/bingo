@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "heic2any": "^0.0.4",
+    "jszip": "^3.10.1",
     "vue": "^3.5.27",
     "vue-router": "^5.0.1"
   },

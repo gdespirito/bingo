@@ -10,13 +10,13 @@ El workflow **Build and push Docker image** (`.github/workflows/docker-push.yml`
 
 En el repo: **Settings → Secrets and variables → Actions** crea estos secrets:
 
-| Secret               | Descripción                                                                 | Valor |
-|----------------------|-----------------------------------------------------------------------------|--------|
-| `REGISTRY_USERNAME`  | Usuario para `registry.freshwork.dev`                                       | usuario o token ID |
-| `REGISTRY_PASSWORD`  | Contraseña o token del registry                                            | token o contraseña |
-| `KUBE_CONFIG`        | Kubeconfig del cluster donde corre el deployment `bingo` (namespace `bingo`), **en base64** | `cat ~/.kube/config \| base64 -w0` (Linux) o `cat ~/.kube/config \| base64` (macOS) |
+| Secret                 | Descripción                                                       | Valor |
+|------------------------|-------------------------------------------------------------------|--------|
+| `REGISTRY_USERNAME`    | Usuario para `registry.freshwork.dev`                             | usuario o token ID |
+| `REGISTRY_PASSWORD`    | Contraseña o token del registry                                  | token o contraseña |
+| `DEPLOY_WEBHOOK_TOKEN` | Bearer token para el webhook de deploy en `deploy.freshwork.dev` | el token que corresponda |
 
-Sin `REGISTRY_*`, falla el login al registry. Sin `KUBE_CONFIG`, falla el job de rollout (la imagen sí se sube).
+Sin `REGISTRY_*`, falla el login al registry. Sin `DEPLOY_WEBHOOK_TOKEN`, falla el job de deploy (la imagen sí se sube).
 
 ## Recommended IDE Setup
 

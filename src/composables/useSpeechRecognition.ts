@@ -126,7 +126,14 @@ export function useSpeechRecognition(onNumber: (num: number) => void) {
       listening.value = false
       setTimeout(() => { speechStatus.value = 'idle' }, 2000)
     }
-    recognition.onend = () => { listening.value = false }
+    recognition.onend = () => {
+      listening.value = false
+      if (speechStatus.value === 'listening') {
+        speechStatus.value = 'error'
+        speechText.value = 'No se detectó voz'
+        setTimeout(() => { speechStatus.value = 'idle' }, 2000)
+      }
+    }
     recognition.start()
   }
 

@@ -34,7 +34,7 @@ function getNumbers(start: number, end: number): number[] {
   return nums
 }
 
-const { speechStatus, speechText, recognizedNum } = useSpeechRecognition((num) => {
+const { speechStatus, speechText, recognizedNum, stopListening } = useSpeechRecognition((num) => {
   if (!calledNumbers.value.has(num)) {
     toggleNumber(num)
     playNumber(num)
@@ -180,6 +180,12 @@ function drawRandomNumber() {
       <div v-if="speechStatus === 'listening'" class="flex items-center gap-2 text-sm font-semibold text-slate-300">
         <span class="animate-[pulse-mic_1s_ease_infinite] text-lg">&#127908;</span>
         <span>Escuchando...</span>
+        <button
+          class="ml-2 cursor-pointer rounded-md border border-slate-700 bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-400 transition-colors hover:border-red-600 hover:bg-red-600/20 hover:text-red-400"
+          @click="stopListening"
+        >
+          Cancelar
+        </button>
       </div>
       <div v-else-if="speechStatus === 'success'" class="flex items-center gap-2 text-sm font-semibold text-slate-300">
         <span class="text-lg">&#9989;</span>

@@ -144,9 +144,19 @@ export function useSpeechRecognition(onNumber: (num: number) => void) {
     }
   }
 
-  onMounted(() => { window.addEventListener('keydown', onKeyDown) })
+  function onKeyUp(e: KeyboardEvent) {
+    if (e.code === 'Space' && !isInputFocused()) {
+      e.preventDefault()
+    }
+  }
+
+  onMounted(() => {
+    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keyup', onKeyUp)
+  })
   onUnmounted(() => {
     window.removeEventListener('keydown', onKeyDown)
+    window.removeEventListener('keyup', onKeyUp)
     if (recognition) recognition.abort()
   })
 

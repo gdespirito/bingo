@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npm run type-check:*)",
       "Bash(git stash:*)",
-      "Bash(npm run build-only:*)"
+      "Bash(npm run build-only:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)"
     ]
   }
 }

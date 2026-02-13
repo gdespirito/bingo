@@ -96,10 +96,17 @@ export function useSpeechRecognition(onNumber: (num: number) => void) {
       speechText.value = ''
       recognizedNum.value = null
     }
+    let handled = false
     recognition.onresult = (event: any) => {
+      if (handled) return
+      // Only process once the result is final
+      const result = event.results[event.results.length - 1]
+      if (!result.isFinal) return
+      handled = true
+
       let bestNum: number | null = null
-      for (let i = 0; i < event.results[0].length; i++) {
-        const transcript = event.results[0][i].transcript
+      for (let i = 0; i < result.length; i++) {
+        const transcript = result[i].transcript
         speechText.value = transcript
         const num = parseSpokenNumber(transcript)
         if (num !== null) { bestNum = num; break }

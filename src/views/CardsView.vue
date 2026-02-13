@@ -1,5 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Cartones de Bingo Personalizados | Bingoo',
+  meta: [
+    { name: 'description', content: 'Crea y gestiona tus cartones de bingo. Sube una foto y extrae los números automáticamente con inteligencia artificial.' },
+    { property: 'og:title', content: 'Cartones de Bingo Personalizados | Bingoo' },
+    { property: 'og:description', content: 'Crea y gestiona tus cartones de bingo. Sube una foto y extrae los números automáticamente con inteligencia artificial.' },
+    { property: 'og:url', content: 'https://bingoo.app/cartones' },
+  ],
+})
 import { useBingoState, type BingoCard } from '@/composables/useBingoState'
 import BingoCardPreview from '@/components/BingoCardPreview.vue'
 import CardEditor from '@/components/CardEditor.vue'

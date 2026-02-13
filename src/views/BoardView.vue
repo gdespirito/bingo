@@ -1,5 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Tablero de Bingo Online Gratis | Bingoo',
+  meta: [
+    { name: 'description', content: 'Juega al bingo en tiempo real con tu familia o amigos. Tablero digital con 75 números, reconocimiento de voz y seguimiento de cartones.' },
+    { property: 'og:title', content: 'Tablero de Bingo Online Gratis | Bingoo' },
+    { property: 'og:description', content: 'Juega al bingo en tiempo real con tu familia o amigos. Tablero digital con 75 números, reconocimiento de voz y seguimiento de cartones.' },
+    { property: 'og:url', content: 'https://bingoo.app/' },
+  ],
+})
 import { useBingoState } from '@/composables/useBingoState'
 import { useBingoAudio } from '@/composables/useBingoAudio'
 import { useSpeechRecognition } from '@/composables/useSpeechRecognition'

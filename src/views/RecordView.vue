@@ -1,5 +1,16 @@
 <script setup lang="ts">
+import { useHead } from '@unhead/vue'
 import { useAudioRecorder } from '@/composables/useAudioRecorder'
+
+useHead({
+  title: 'Graba el Audio para tu Bingo | Bingoo',
+  meta: [
+    { name: 'description', content: 'Graba tu propia voz llamando los 75 números del bingo y descárgalos como audio para usar en tus partidas.' },
+    { property: 'og:title', content: 'Graba el Audio para tu Bingo | Bingoo' },
+    { property: 'og:description', content: 'Graba tu propia voz llamando los 75 números del bingo y descárgalos como audio para usar en tus partidas.' },
+    { property: 'og:url', content: 'https://bingoo.app/grabar' },
+  ],
+})
 import { useBingoState } from '@/composables/useBingoState'
 
 const { getLetterForNumber, getColorForNumber, columns } = useBingoState()

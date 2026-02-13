@@ -11,6 +11,7 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
+    "@unhead/vue": "^2.1.4",
     "heic2any": "^0.0.4",
     "jszip": "^3.10.1",
     "vue": "^3.5.27",

@@ -1,5 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Generar Cartones de Bingo para Imprimir Gratis | Bingoo',
+  meta: [
+    { name: 'description', content: 'Genera cartones de bingo aleatorios gratis y listos para imprimir. Hasta 100 cartones por hoja en formato carta.' },
+    { property: 'og:title', content: 'Generar Cartones de Bingo para Imprimir Gratis | Bingoo' },
+    { property: 'og:description', content: 'Genera cartones de bingo aleatorios gratis y listos para imprimir. Hasta 100 cartones por hoja en formato carta.' },
+    { property: 'og:url', content: 'https://bingoo.app/generar' },
+  ],
+})
 import { useBingoState } from '@/composables/useBingoState'
 
 const { generateRandomGrid, addCard, columns } = useBingoState()

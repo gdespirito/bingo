@@ -5,7 +5,14 @@
       "Bash(git stash:*)",
       "Bash(npm run build-only:*)",
       "Bash(npm install:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(node -e:*)",
+      "Bash(git -C /Users/gonza/code/bingo status)",
+      "Bash(git -C /Users/gonza/code/bingo diff)",
+      "Bash(git -C /Users/gonza/code/bingo log --oneline -5)",
+      "Bash(git -C /Users/gonza/code/bingo add index.html package.json package-lock.json src/main.ts src/App.vue src/views/BoardView.vue src/views/CardsView.vue src/views/GenerateView.vue src/views/RecordView.vue public/robots.txt public/sitemap.xml)",
+      "Bash(git -C /Users/gonza/code/bingo commit -m \"$\\(cat <<''EOF''\nfeat: add SEO meta tags, dynamic titles per route, share button, robots.txt and sitemap\n\n- lang=\"es\", meta description, keywords, canonical and og:locale in index.html\n- schema.org WebApplication JSON-LD\n- @unhead/vue for per-route title and meta description\n- share button in header using Web Share API with WhatsApp fallback\n- public/robots.txt and public/sitemap.xml\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git -C /Users/gonza/code/bingo push)"
     ]
   }
 }

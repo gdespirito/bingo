@@ -72,7 +72,7 @@ async function share() {
         </router-link>
       </nav>
 
-      <div v-if="route.name !== 'record' && route.name !== 'generate'" class="mt-3.5 flex flex-col items-center gap-1.5">
+      <div v-if="route.name === 'cards'" class="mt-3.5 flex flex-col items-center gap-1.5">
         <span class="text-[0.7rem] font-semibold uppercase tracking-wider text-slate-600">
           Modo de juego
         </span>

@@ -92,74 +92,76 @@ function drawRandomNumber() {
 
 <template>
   <div class="mx-auto max-w-[700px]">
-    <!-- Stats -->
-    <div class="mb-5 flex flex-wrap items-center justify-center gap-4">
-      <div class="flex flex-col items-center gap-1">
-        <span class="text-[0.7rem] font-semibold uppercase tracking-wider text-slate-500">Último</span>
-        <span
-          v-if="lastCalled"
-          class="min-w-[80px] animate-[pop-in_0.3s_ease] rounded-lg px-4 py-1.5 text-center text-xl font-black text-white"
-          :style="{ background: getColorForNumber(lastCalled) }"
-        >
-          {{ getLetterForNumber(lastCalled) }}-{{ lastCalled }}
-        </span>
-        <span v-else class="min-w-[80px] rounded-lg bg-slate-900 px-4 py-1.5 text-center text-xl font-black text-slate-700">
-          --
-        </span>
-      </div>
-      <div class="flex flex-col items-center gap-1">
-        <span class="text-[0.7rem] font-semibold uppercase tracking-wider text-slate-500">Llamados</span>
-        <span class="text-lg font-bold text-slate-300">{{ totalCalled }} / 75</span>
-      </div>
-      <button
-        class="cursor-pointer rounded-lg border-2 border-slate-800 bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-500 transition-all hover:border-red-600 hover:bg-red-600 hover:text-white"
-        @click="resetBoard"
-      >
-        Reiniciar
-      </button>
-      <label class="flex cursor-pointer items-center gap-2" @click.prevent="toggleSound">
-        <span class="text-sm font-semibold" :class="soundEnabled ? 'text-emerald-400' : 'text-slate-500'">🔊</span>
-        <span
-          class="relative inline-block h-6 w-10 rounded-full transition-colors"
-          :class="soundEnabled ? 'bg-emerald-600' : 'bg-slate-700'"
-        >
+    <!-- Hero Zone -->
+    <div class="mb-4 rounded-2xl border-2 border-slate-800 bg-slate-900/80 px-4 py-5 sm:px-6">
+      <!-- Last called + Counter -->
+      <div class="mb-4 flex items-center justify-center gap-6">
+        <div class="flex items-center gap-3">
           <span
-            class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform"
-            :class="soundEnabled ? 'translate-x-4' : 'translate-x-0'"
-          />
-        </span>
-      </label>
-      <button
-        v-if="soundEnabled && lastCalled"
-        class="cursor-pointer rounded-lg border-2 border-slate-800 bg-slate-900 px-3 py-2 text-sm font-semibold text-slate-500 transition-all hover:border-slate-700 hover:bg-slate-800/60 hover:text-slate-300"
-        @click="playNumber(lastCalled!)"
-      >
-        🔁 Repetir
-      </button>
-      <select
-        v-if="soundEnabled"
-        class="cursor-pointer rounded-lg border-2 border-slate-800 bg-slate-900 px-3 py-2 text-sm font-semibold text-slate-400 transition-all hover:border-slate-700"
-        :value="selectedSpeakerId"
-        @change="setSpeaker(($event.target as HTMLSelectElement).value)"
-      >
-        <option v-for="s in speakers" :key="s.id" :value="s.id">{{ s.name }}</option>
-      </select>
-      <span v-if="isPreloading" class="text-xs text-slate-500">Cargando {{ preloadProgress }}/75</span>
-    </div>
+            v-if="lastCalled"
+            class="min-w-[90px] animate-[pop-in_0.3s_ease] rounded-xl px-5 py-2 text-center text-2xl font-black text-white shadow-lg sm:text-3xl"
+            :style="{ background: getColorForNumber(lastCalled), boxShadow: '0 0 24px ' + getColorForNumber(lastCalled) + '50' }"
+          >
+            {{ getLetterForNumber(lastCalled) }}-{{ lastCalled }}
+          </span>
+          <span v-else class="min-w-[90px] rounded-xl bg-slate-800 px-5 py-2 text-center text-2xl font-black text-slate-700 sm:text-3xl">
+            --
+          </span>
+        </div>
+        <div class="flex flex-col items-center">
+          <span class="text-[0.65rem] font-semibold uppercase tracking-wider text-slate-500">Llamados</span>
+          <span class="text-lg font-bold text-slate-300">{{ totalCalled }}<span class="text-slate-600">/75</span></span>
+        </div>
+      </div>
 
-    <!-- Random draw -->
-    <div class="mb-4 flex justify-center">
-      <button
-        class="cursor-pointer rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-3 text-base font-extrabold text-white shadow-lg transition-all hover:scale-105 hover:shadow-orange-600/30 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
-        :disabled="totalCalled >= 75 || randomAnimating"
-        @click="drawRandomNumber"
+      <!-- Primary CTA -->
+      <div class="mb-4 flex justify-center">
+        <button
+          class="w-full max-w-xs cursor-pointer rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-3 text-base font-extrabold text-white shadow-lg transition-all hover:scale-105 hover:shadow-orange-600/30 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+          :disabled="totalCalled >= 75 || randomAnimating"
+          @click="drawRandomNumber"
+        >
+          <span v-if="randomAnimating" class="inline-flex items-center gap-2">
+            <span class="inline-block h-4 w-4 animate-[spin_0.5s_linear_infinite] rounded-full border-2 border-white/30 border-t-white"></span>
+            Sacando...
+          </span>
+          <span v-else>&#127922; Sacar número</span>
+        </button>
+      </div>
+
+      <!-- Mic bar (compact) -->
+      <div
+        class="flex min-h-[36px] items-center justify-center rounded-lg border-2 px-3 py-1.5 transition-all"
+        :class="{
+          'border-green-500 bg-[#1e3a2f] shadow-[0_0_20px_rgba(34,197,94,0.15)]': speechStatus === 'listening',
+          'border-blue-600 bg-slate-900': speechStatus === 'success',
+          'border-red-600 bg-[#2d1f1f]': speechStatus === 'error',
+          'border-slate-800 bg-slate-800/50': speechStatus === 'idle',
+        }"
       >
-        <span v-if="randomAnimating" class="inline-flex items-center gap-2">
-          <span class="inline-block h-4 w-4 animate-[spin_0.5s_linear_infinite] rounded-full border-2 border-white/30 border-t-white"></span>
-          Sacando...
-        </span>
-        <span v-else>&#127922; Sacar número</span>
-      </button>
+        <div v-if="speechStatus === 'listening'" class="flex items-center gap-2 text-sm font-semibold text-slate-300">
+          <span class="animate-[pulse-mic_1s_ease_infinite] text-lg">&#127908;</span>
+          <span>Escuchando...</span>
+          <button
+            class="ml-2 cursor-pointer rounded-md border border-slate-700 bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-400 transition-colors hover:border-red-600 hover:bg-red-600/20 hover:text-red-400"
+            @click="stopListening"
+          >
+            Cancelar
+          </button>
+        </div>
+        <div v-else-if="speechStatus === 'success'" class="flex items-center gap-2 text-sm font-semibold text-slate-300">
+          <span class="text-lg">&#9989;</span>
+          <span>"{{ speechText }}" &rarr; <strong>{{ recognizedNum }}</strong></span>
+        </div>
+        <div v-else-if="speechStatus === 'error'" class="flex items-center gap-2 text-sm font-semibold text-slate-300">
+          <span class="text-lg">&#10060;</span>
+          <span>{{ speechText || 'No reconocido' }} &mdash; intenta de nuevo</span>
+        </div>
+        <div v-else class="flex items-center gap-2 text-xs font-semibold text-slate-600">
+          <span class="text-base">&#127908;</span>
+          <span>Presiona <kbd class="rounded border border-slate-700 bg-slate-800 px-1.5 py-0.5 text-[0.65rem] font-bold text-slate-500">espacio</kbd> para dictar</span>
+        </div>
+      </div>
     </div>
 
     <!-- Floating random result overlay -->
@@ -178,38 +180,44 @@ function drawRandomNumber() {
       </div>
     </Teleport>
 
-    <!-- Mic bar -->
-    <div
-      class="mb-4 flex min-h-[42px] items-center justify-center rounded-lg border-2 px-4 py-2 transition-all"
-      :class="{
-        'border-green-500 bg-[#1e3a2f] shadow-[0_0_20px_rgba(34,197,94,0.15)]': speechStatus === 'listening',
-        'border-blue-600 bg-slate-900': speechStatus === 'success',
-        'border-red-600 bg-[#2d1f1f]': speechStatus === 'error',
-        'border-slate-800 bg-slate-900': speechStatus === 'idle',
-      }"
-    >
-      <div v-if="speechStatus === 'listening'" class="flex items-center gap-2 text-sm font-semibold text-slate-300">
-        <span class="animate-[pulse-mic_1s_ease_infinite] text-lg">&#127908;</span>
-        <span>Escuchando...</span>
-        <button
-          class="ml-2 cursor-pointer rounded-md border border-slate-700 bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-400 transition-colors hover:border-red-600 hover:bg-red-600/20 hover:text-red-400"
-          @click="stopListening"
+    <!-- Audio Settings + Reset -->
+    <div class="mb-4 flex flex-wrap items-center justify-center gap-3 text-sm">
+      <label class="flex cursor-pointer items-center gap-2" @click.prevent="toggleSound">
+        <span class="text-sm" :class="soundEnabled ? 'text-emerald-400' : 'text-slate-500'">🔊</span>
+        <span
+          class="relative inline-block h-5 w-9 rounded-full transition-colors"
+          :class="soundEnabled ? 'bg-emerald-600' : 'bg-slate-700'"
         >
-          Cancelar
+          <span
+            class="absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform"
+            :class="soundEnabled ? 'translate-x-4' : 'translate-x-0'"
+          />
+        </span>
+      </label>
+      <template v-if="soundEnabled">
+        <select
+          class="cursor-pointer rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-medium text-slate-400 transition-all hover:border-slate-600"
+          :value="selectedSpeakerId"
+          @change="setSpeaker(($event.target as HTMLSelectElement).value)"
+        >
+          <option v-for="s in speakers" :key="s.id" :value="s.id">{{ s.name }}</option>
+        </select>
+        <button
+          v-if="lastCalled"
+          class="cursor-pointer rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-400 transition-all hover:border-slate-600 hover:text-slate-300"
+          @click="playNumber(lastCalled!)"
+        >
+          🔁 Repetir
         </button>
-      </div>
-      <div v-else-if="speechStatus === 'success'" class="flex items-center gap-2 text-sm font-semibold text-slate-300">
-        <span class="text-lg">&#9989;</span>
-        <span>"{{ speechText }}" &rarr; <strong>{{ recognizedNum }}</strong></span>
-      </div>
-      <div v-else-if="speechStatus === 'error'" class="flex items-center gap-2 text-sm font-semibold text-slate-300">
-        <span class="text-lg">&#10060;</span>
-        <span>{{ speechText || 'No reconocido' }} &mdash; intenta de nuevo</span>
-      </div>
-      <div v-else class="flex items-center gap-2 text-sm font-semibold text-slate-600">
-        <span class="text-lg">&#127908;</span>
-        <span>Presiona <kbd class="rounded border border-slate-700 bg-slate-800 px-2 py-0.5 text-xs font-bold text-slate-500">espacio</kbd> para dictar un número</span>
-      </div>
+        <span v-if="isPreloading" class="text-[0.65rem] text-slate-500">{{ preloadProgress }}/75</span>
+      </template>
+      <span class="mx-1 hidden h-4 w-px bg-slate-700 sm:inline-block"></span>
+      <button
+        class="cursor-pointer rounded-lg px-2.5 py-1 text-xs font-medium text-slate-600 transition-all hover:bg-slate-800 hover:text-red-400"
+        @click="resetBoard"
+      >
+        Reiniciar
+      </button>
     </div>
 
     <!-- Board + History -->

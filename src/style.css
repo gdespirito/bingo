@@ -75,6 +75,37 @@ body {
   50% { opacity: 0.4; transform: scale(1.2); }
 }
 
+/* Print styles — hide chrome, white background */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  header {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Remove container padding/max-width */
+  main, main > div, body > div, #app > div {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  @page {
+    size: letter;
+    margin: 5mm;
+  }
+}
+
 /* Number input spinners */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {

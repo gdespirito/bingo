@@ -193,6 +193,43 @@ function updateCard(id: string, name: string, grid: (number | null)[][]) {
   }
 }
 
+// ── Random grid generation ──
+
+function generateRandomGrid(): (number | null)[][] {
+  const ranges = [
+    { start: 1, end: 15 },
+    { start: 16, end: 30 },
+    { start: 31, end: 45 },
+    { start: 46, end: 60 },
+    { start: 61, end: 75 },
+  ]
+
+  // Pick 5 random numbers from each column range, shuffle order (Fisher-Yates)
+  const colNumbers = ranges.map(({ start, end }) => {
+    const pool: number[] = []
+    for (let n = start; n <= end; n++) pool.push(n)
+    // Fisher-Yates shuffle
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j]!, pool[i]!]
+    }
+    return pool.slice(0, 5)
+  })
+
+  // Build 5×5 grid (rows × cols)
+  const grid: (number | null)[][] = []
+  for (let row = 0; row < 5; row++) {
+    const r: (number | null)[] = []
+    for (let col = 0; col < 5; col++) {
+      r.push(colNumbers[col]![row]!)
+    }
+    grid.push(r)
+  }
+  // FREE center
+  grid[2]![2] = null
+  return grid
+}
+
 // ── Helpers ──
 
 const columns = [
@@ -242,6 +279,8 @@ export function useBingoState() {
     isCellInPattern,
     checkCardWin,
     getWinningCards,
+    // generation
+    generateRandomGrid,
     // helpers
     columns,
     getLetterForNumber,

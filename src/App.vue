@@ -40,9 +40,16 @@ const { activeGameMode, gameModes, setGameMode } = useBingoState()
         >
           Grabar Audio
         </router-link>
+        <router-link
+          to="/generar"
+          class="rounded-lg px-5 py-2 text-sm font-semibold text-slate-500 transition-all hover:text-slate-300"
+          :class="route.name === 'generate' && '!bg-slate-800 !text-slate-100'"
+        >
+          Generar Cartones
+        </router-link>
       </nav>
 
-      <div v-if="route.name !== 'record'" class="mt-3.5 flex flex-col items-center gap-1.5">
+      <div v-if="route.name !== 'record' && route.name !== 'generate'" class="mt-3.5 flex flex-col items-center gap-1.5">
         <span class="text-[0.7rem] font-semibold uppercase tracking-wider text-slate-600">
           Modo de juego
         </span>

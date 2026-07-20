@@ -14,6 +14,7 @@ useHead({
 import { useBingoState } from '@/composables/useBingoState'
 import { useBingoAudio } from '@/composables/useBingoAudio'
 import { useSpeechRecognition } from '@/composables/useSpeechRecognition'
+import { track } from '@/analytics'
 import HistoryPanel from '@/components/HistoryPanel.vue'
 
 const {
@@ -49,6 +50,12 @@ const { speechStatus, speechText, recognizedNum, stopListening } = useSpeechReco
   if (!calledNumbers.value.has(num)) {
     toggleNumber(num)
     playNumber(num)
+    track('numero_sacado', {
+      numero: num,
+      columna: getLetterForNumber(num),
+      metodo: 'voz',
+      total_llamados: totalCalled.value,
+    })
   }
 })
 
@@ -59,7 +66,17 @@ let toggleTimer: ReturnType<typeof setTimeout> | null = null
 function onToggle(num: number) {
   const wasUncalled = !calledNumbers.value.has(num)
   toggleNumber(num)
-  if (wasUncalled) playNumber(num)
+  if (wasUncalled) {
+    playNumber(num)
+    track('numero_sacado', {
+      numero: num,
+      columna: getLetterForNumber(num),
+      metodo: 'manual',
+      total_llamados: totalCalled.value,
+    })
+  } else {
+    track('numero_desmarcado', { numero: num, columna: getLetterForNumber(num) })
+  }
   justToggled.value = num
   if (toggleTimer) clearTimeout(toggleTimer)
   toggleTimer = setTimeout(() => { justToggled.value = null }, 400)
@@ -69,6 +86,11 @@ function onToggle(num: number) {
 const randomResult = ref<number | null>(null)
 const randomAnimating = ref(false)
 const randomKey = ref(0)
+
+function onReset() {
+  track('tablero_reiniciado', { total_llamados: totalCalled.value })
+  resetBoard()
+}
 
 function drawRandomNumber() {
   const available: number[] = []
@@ -84,6 +106,12 @@ function drawRandomNumber() {
     randomKey.value++
     toggleNumber(chosen)
     playNumber(chosen)
+    track('numero_sacado', {
+      numero: chosen,
+      columna: getLetterForNumber(chosen),
+      metodo: 'aleatorio',
+      total_llamados: totalCalled.value,
+    })
     randomAnimating.value = false
     setTimeout(() => { randomResult.value = null }, 1800)
   }, 300)
@@ -214,7 +242,7 @@ function drawRandomNumber() {
       <span class="mx-1 hidden h-4 w-px bg-slate-700 sm:inline-block"></span>
       <button
         class="cursor-pointer rounded-lg px-2.5 py-1 text-xs font-medium text-slate-600 transition-all hover:bg-slate-800 hover:text-red-400"
-        @click="resetBoard"
+        @click="onReset"
       >
         Reiniciar
       </button>

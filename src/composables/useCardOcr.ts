@@ -1,5 +1,6 @@
 import { ref, type Ref } from 'vue'
 import heic2any from 'heic2any'
+import { track } from '@/analytics'
 
 function isHeic(file: File): boolean {
   const n = file.name.toLowerCase()
@@ -82,12 +83,15 @@ export function useCardOcr(
     input.value = ''
     photoError.value = ''
     photoLoading.value = true
+    const wasHeic = isHeic(file)
     try {
-      if (isHeic(file)) file = await convertHeicToJpeg(file)
+      if (wasHeic) file = await convertHeicToJpeg(file)
       const base64 = await fileToBase64(file)
       applyParsedGrid(await callVisionAPI(apiKey.value.trim(), base64, file.type))
+      track('carton_foto_procesada', { exito: true, heic: wasHeic })
     } catch (err: any) {
       photoError.value = err.message || 'Error al procesar la imagen'
+      track('carton_foto_procesada', { exito: false, heic: wasHeic, error: photoError.value })
     } finally {
       photoLoading.value = false
     }

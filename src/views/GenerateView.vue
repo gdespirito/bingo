@@ -12,6 +12,7 @@ useHead({
   ],
 })
 import { useBingoState } from '@/composables/useBingoState'
+import { track } from '@/analytics'
 
 const { generateRandomGrid, addCard, columns } = useBingoState()
 
@@ -24,9 +25,11 @@ function generate() {
     cards.push({ id: i + 1, grid: generateRandomGrid() })
   }
   generatedCards.value = cards
+  track('cartones_generados', { cantidad: cards.length })
 }
 
 function printCards() {
+  track('cartones_impresos', { cantidad: generatedCards.value.length })
   window.print()
 }
 
@@ -35,6 +38,7 @@ function saveToMyCards() {
   for (const card of generatedCards.value) {
     addCard(`Cartón #${card.id}`, card.grid)
   }
+  track('carton_creado', { origen: 'generador', cantidad: generatedCards.value.length })
   alert(`${generatedCards.value.length} cartones guardados.`)
 }
 </script>

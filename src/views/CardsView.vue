@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useHead } from '@unhead/vue'
 
 useHead({
@@ -12,11 +12,28 @@ useHead({
   ],
 })
 import { useBingoState, type BingoCard } from '@/composables/useBingoState'
+import { track } from '@/analytics'
 import BingoCardPreview from '@/components/BingoCardPreview.vue'
 import CardEditor from '@/components/CardEditor.vue'
 import ApiKeyModal from '@/components/ApiKeyModal.vue'
 
-const { cards, addCard, removeCard, updateCard } = useBingoState()
+const { cards, addCard, removeCard, updateCard, getWinningCards, activeGameMode } = useBingoState()
+
+// Dispara `bingo_detectado` una sola vez por cartón que pasa a ganador.
+const winningIds = computed(() => getWinningCards().map((c) => c.id))
+const notifiedWins = new Set<string>()
+watch(
+  winningIds,
+  (ids) => {
+    for (const id of ids) {
+      if (!notifiedWins.has(id)) {
+        notifiedWins.add(id)
+        track('bingo_detectado', { carton_id: id, modo: activeGameMode.value })
+      }
+    }
+  },
+  { immediate: true },
+)
 
 const APIKEY_STORAGE = 'bingo-openai-key'
 const apiKey = ref(localStorage.getItem(APIKEY_STORAGE) ?? '')
@@ -39,14 +56,19 @@ function openEditCard(card: BingoCard) {
 function saveCard(name: string, grid: (number | null)[][]) {
   if (editingCard.value) {
     updateCard(editingCard.value.id, name, grid)
+    track('carton_editado', { id: editingCard.value.id })
   } else {
     addCard(name, grid)
+    track('carton_creado', { origen: 'editor', total_cartones: cards.value.length })
   }
   showEditor.value = false
 }
 
 function confirmDelete(id: string) {
-  if (confirm('Eliminar este cartón?')) removeCard(id)
+  if (confirm('Eliminar este cartón?')) {
+    removeCard(id)
+    track('carton_eliminado', { total_cartones: cards.value.length })
+  }
 }
 
 function syncApiKey() {

@@ -1,14 +1,23 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { useBingoState } from '@/composables/useBingoState'
+import { track } from '@/analytics'
+import type { GameMode } from '@/composables/useBingoState'
 
 const route = useRoute()
 const { activeGameMode, gameModes, setGameMode } = useBingoState()
 
+function onSetGameMode(mode: GameMode) {
+  if (mode !== activeGameMode.value) track('modo_juego_cambiado', { modo: mode })
+  setGameMode(mode)
+}
+
 async function share() {
   const text = '¡Juega al bingo gratis con esta herramienta! 🎱'
   const url = 'https://bingoo.app'
-  if (navigator.share) {
+  const canNativeShare = 'share' in navigator
+  track('app_compartida', { metodo: canNativeShare ? 'nativo' : 'whatsapp' })
+  if (canNativeShare) {
     await navigator.share({ title: 'Bingoo', text, url })
   } else {
     window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank')
@@ -82,7 +91,7 @@ async function share() {
             :key="mode.id"
             class="flex cursor-pointer items-center gap-1 rounded-lg border-none bg-transparent px-3 py-1.5 text-sm font-semibold text-slate-600 transition-all hover:text-slate-500"
             :class="activeGameMode === mode.id && '!bg-slate-800 !text-slate-100'"
-            @click="setGameMode(mode.id)"
+            @click="onSetGameMode(mode.id)"
           >
             <span class="text-base">{{ mode.icon }}</span>
             <span class="text-xs">{{ mode.label }}</span>

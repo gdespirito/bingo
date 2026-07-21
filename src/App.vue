@@ -103,5 +103,17 @@ async function share() {
     <main>
       <router-view />
     </main>
+
+    <footer class="mt-10 pb-6 text-center text-xs text-slate-600">
+      Bingoo ·
+      <a
+        href="https://kilden.io"
+        target="_blank"
+        rel="noopener"
+        class="font-semibold text-slate-500 transition-colors hover:text-slate-400"
+      >
+        Web analytics por Kilden
+      </a>
+    </footer>
   </div>
 </template>
